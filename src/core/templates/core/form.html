@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<h1>{{ titulo }}</h1>
+{% if subtitulo %}<p class="introducao">{{ subtitulo }}</p>{% endif %}
+<form method="post" class="formulario" novalidate>{% csrf_token %}
+  {% if form %}{% include "core/_campos.html" with form=form %}{% endif %}
+  {% if formset %}
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}<div class="erro">{{ formset.non_form_errors }}</div>{% endif %}
+    {% for form in formset %}
+      <fieldset>
+        <legend>{% if form.instance.pk %}{{ form.instance.nome_completo }}{% else %}Nova pessoa{% endif %}</legend>
+        {% include "core/_campos.html" with form=form %}
+      </fieldset>
+    {% endfor %}
+  {% endif %}
+  <div class="acoes">
+    <button class="botao" type="submit">{{ texto_botao|default:"Salvar" }}</button>
+    <a href="{{ url_voltar }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

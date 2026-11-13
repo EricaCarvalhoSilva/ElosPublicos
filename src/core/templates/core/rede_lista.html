@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% block titulo %}Redes de apoio{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h1>Redes de apoio mútuo</h1><p class="introducao">Grupos de vizinhos que doam, trocam serviços e dividem caronas.</p></div>
+  <a class="botao" href="{% url 'core:rede-nova' %}">Criar rede</a>
+</div>
+{% if object_list %}
+<ul class="lista-simples">{% for r in object_list %}
+  <li><h3><a href="{{ r.get_absolute_url }}">{{ r.nome }}</a></h3>
+  <p class="meta">{{ r.municipio }}/{{ r.uf }}, {{ r.membros.count }} participante{{ r.membros.count|pluralize }}</p>
+  {% if r.descricao %}<p>{{ r.descricao|truncatewords:30 }}</p>{% endif %}</li>
+{% endfor %}</ul>
+{% else %}<p class="vazio">Nenhuma rede criada ainda. <a href="{% url 'core:rede-nova' %}">Crie a primeira</a>.</p>{% endif %}
+{% endblock %}

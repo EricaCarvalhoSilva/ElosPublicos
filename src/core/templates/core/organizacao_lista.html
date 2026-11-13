@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block titulo %}Organizações{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h1>Organizações da sociedade civil</h1><p class="introducao">ONGs, coletivos e associações que publicam editais, oficinas e eventos.</p></div>
+  <a class="botao" href="{% url 'core:organizacao-nova' %}">Cadastrar organização</a>
+</div>
+{% if object_list %}
+<div class="rolagem"><table>
+  <thead><tr><th>Nome</th><th>Tipo</th><th>Documento</th><th>Local</th><th>Ações</th></tr></thead>
+  <tbody>{% for o in object_list %}
+  <tr><td>{{ o.nome_completo }}</td><td>{{ o.tipoPerfil }}</td><td>{{ o.documentoExibicao }}</td><td>{{ o.municipio }}/{{ o.uf }}</td>
+  <td class="links-linha"><a href="{% url 'core:organizacao-editar' o.pk %}">Editar</a><a href="{% url 'core:organizacao-excluir' o.pk %}">Excluir</a></td></tr>
+  {% endfor %}</tbody>
+</table></div>
+{% else %}<p class="vazio">Nenhuma organização cadastrada.</p>{% endif %}
+{% endblock %}

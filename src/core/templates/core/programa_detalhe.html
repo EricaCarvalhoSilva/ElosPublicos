@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}{% load formatos %}
+{% block titulo %}{{ object.nome }}{% endblock %}
+{% block conteudo %}
+<h1>{{ object.nome }}</h1>
+<p class="introducao">{{ object.get_esfera_display }}, {{ object.abrangencia }}. Onde pedir: {{ object.orgao_responsavel }}.</p>
+<p class="texto-longo">{{ object.descricao }}</p>
+<h2>Quem tem direito</h2>
+<p class="texto-longo">{{ object.criterios_elegibilidade }}</p>
+{% if object.renda_per_capita_maxima is not None %}<p><strong>Limite de renda por pessoa:</strong> {{ object.renda_per_capita_maxima|reais }}</p>{% endif %}
+<h2>Documentos para levar</h2>
+<p class="texto-longo">{{ object.documentacao_necessaria }}</p>
+{% if object.link_oficial %}<p><a href="{{ object.link_oficial }}" rel="noopener" target="_blank">Página oficial do programa</a></p>{% endif %}
+
+{% if user.is_authenticated %}
+<h2>Verificar um cidadão</h2>
+<form method="get" class="filtros">
+  <div class="campo"><label for="cidadao">Cidadão</label>
+    <select id="cidadao" name="cidadao">{% for c in cidadaos %}<option value="{{ c.pk }}" {% if cidadao_avaliado.pk == c.pk %}selected{% endif %}>{{ c.nome_completo }}</option>{% endfor %}</select>
+  </div>
+  <button class="botao secundario" type="submit">Verificar</button>
+</form>
+{% if resultado %}
+  <p>{% if resultado.elegivel %}<span class="selo ok">Pode ter direito</span>{% else %}<span class="selo nao">Não atende aos critérios</span>{% endif %} {{ cidadao_avaliado.nome_completo }}</p>
+  <ul>{% for r in resultado.resultados %}<li>{{ r.motivo }}</li>{% endfor %}</ul>
+  {% if resultado.elegivel %}<a class="botao" href="{% url 'core:solicitacao-nova' %}?cidadao={{ cidadao_avaliado.pk }}&programa={{ object.pk }}">Registrar solicitação</a>{% endif %}
+{% endif %}
+<div class="acoes">
+  <a href="{% url 'core:programa-editar' object.pk %}">Editar programa</a>
+  <a href="{% url 'core:programa-excluir' object.pk %}">Excluir programa</a>
+</div>
+{% endif %}
+{% endblock %}

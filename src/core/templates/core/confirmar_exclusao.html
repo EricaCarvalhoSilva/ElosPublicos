@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block titulo %}Excluir{% endblock %}
+{% block conteudo %}
+<h1>Excluir “{{ object }}”?</h1>
+<p class="introducao">Essa ação não pode ser desfeita.{% if aviso %} {{ aviso }}{% endif %}</p>
+<form method="post">{% csrf_token %}
+  <div class="acoes">
+    <button class="botao perigo" type="submit">Excluir definitivamente</button>
+    <a href="javascript:history.back()">Voltar sem excluir</a>
+  </div>
+</form>
+{% endblock %}

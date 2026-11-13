@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}{% load formatos %}
+{% block titulo %}{{ object.nome_completo }}{% endblock %}
+{% block conteudo %}
+<h1>{{ object.nome_completo }}</h1>
+<p class="introducao">{{ object.apresentacao }}</p>
+<dl class="dados">
+  <dt>CPF</dt><dd>{{ object.documentoExibicao }}</dd>
+  <dt>Telefone</dt><dd>{{ object.telefone }}</dd>
+  <dt>E-mail</dt><dd>{{ object.email|default:"Não informado" }}</dd>
+  <dt>Endereço</dt><dd>{{ object.endereco }}</dd>
+  <dt>Renda familiar</dt><dd>{{ object.renda_familiar_declarada|reais }} por mês</dd>
+  <dt>Pessoas na casa</dt><dd>{{ object.quantidadePessoas }}</dd>
+  <dt>Renda por pessoa</dt><dd>{{ object.rendaPerCapita|reais }}</dd>
+</dl>
+<div class="acoes">
+  <a class="botao" href="{% url 'core:cidadao-editar' object.pk %}">Editar cadastro</a>
+  <a class="botao secundario" href="{% url 'core:cidadao-membros' object.pk %}">Editar família</a>
+  <a href="{% url 'core:cidadao-excluir' object.pk %}">Excluir cadastro</a>
+</div>
+
+<h2>Quem mora junto</h2>
+{% if membros %}
+<ul class="lista-simples">{% for m in membros %}<li><strong>{{ m.nome_completo }}</strong><p class="meta">{{ m.get_parentesco_display }}{% if m.data_nascimento %}, nascido(a) em {{ m.data_nascimento|date:"d/m/Y" }}{% endif %}</p></li>{% endfor %}</ul>
+{% else %}<p class="vazio">Mora sozinho(a) ou a família ainda não foi informada. <a href="{% url 'core:cidadao-membros' object.pk %}">Informar quem mora junto</a>.</p>{% endif %}
+
+<h2>Programas que valem para a região</h2>
+<p class="introducao">Checagem automática pela renda por pessoa e pelo local de moradia. A decisão final é sempre do órgão responsável.</p>
+{% if avaliacoes %}
+<div class="rolagem"><table>
+  <thead><tr><th>Programa</th><th>Situação</th><th>Motivo</th><th></th></tr></thead>
+  <tbody>
+  {% for programa, resultado in avaliacoes %}
+    <tr>
+      <td><a href="{{ programa.get_absolute_url }}">{{ programa.nome }}</a><p class="meta">{{ programa.get_esfera_display }}</p></td>
+      <td>{% if resultado.elegivel %}<span class="selo ok">Pode ter direito</span>{% else %}<span class="selo nao">Não atende</span>{% endif %}</td>
+      <td>{% for r in resultado.resultados %}{{ r.motivo }}<br>{% endfor %}</td>
+      <td>{% if resultado.elegivel %}<a href="{% url 'core:solicitacao-nova' %}?cidadao={{ object.pk }}&programa={{ programa.pk }}">Registrar pedido</a>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}<p class="vazio">Nenhum programa cadastrado para esta região.</p>{% endif %}
+
+<h2>Solicitações</h2>
+{% if solicitacoes %}
+<ul class="lista-simples">{% for s in solicitacoes %}
+  <li><strong>{{ s.programa.nome }}</strong> <span class="selo {% if s.status == 'DEFERIDA' %}ok{% elif s.status == 'INDEFERIDA' %}nao{% else %}neutro{% endif %}">{{ s.get_status_display }}</span>
+  <p class="meta">{{ s.get_orgao_display }}{% if s.numero_protocolo %}, protocolo {{ s.numero_protocolo }}{% endif %}. Atualizada em {{ s.atualizado_em|date:"d/m/Y" }}.</p>
+  <a href="{% url 'core:solicitacao-editar' s.pk %}">Atualizar situação</a></li>
+{% endfor %}</ul>
+{% else %}<p class="vazio">Nenhuma solicitação registrada.</p>{% endif %}
+{% endblock %}

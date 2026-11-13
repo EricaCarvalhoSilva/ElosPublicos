@@ -1,0 +1,48 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}ElosPúblicos{% endblock %} | ElosPúblicos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/estilo.css' %}">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-conteudo">
+      <a class="marca" href="{% url 'core:inicio' %}">Elos<span>Públicos</span></a>
+      <nav aria-label="Menu principal">
+        <ul class="menu">
+          <li><a href="{% url 'core:programa-lista' %}">Programas sociais</a></li>
+          <li><a href="{% url 'core:mural' %}">Mural</a></li>
+          <li><a href="{% url 'core:painel' %}">Onde está o dinheiro</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'core:cidadao-lista' %}">Cidadãos</a></li>
+          <li><a href="{% url 'core:solicitacao-lista' %}">Solicitações</a></li>
+          <li><a href="{% url 'core:rede-lista' %}">Redes de apoio</a></li>
+          <li><a href="{% url 'core:organizacao-lista' %}">Organizações</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      <div class="conta">
+        {% if user.is_authenticated %}
+          {{ user.username }} ·
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sair</button></form>
+        {% else %}
+          <a href="{% url 'login' %}">Entrar</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+  <main>
+    {% if messages %}
+    <ul class="mensagens" role="status">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% block conteudo %}{% endblock %}
+  </main>
+</body>
+</html>

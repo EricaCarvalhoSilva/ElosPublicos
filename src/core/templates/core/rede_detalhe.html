@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% block titulo %}{{ object.nome }}{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h1>{{ object.nome }}</h1><p class="introducao">{{ object.municipio }}/{{ object.uf }}. {{ object.descricao }}</p></div>
+  <a class="botao" href="{% url 'core:postagem-nova' object.pk %}">Publicar oferta ou pedido</a>
+</div>
+<p class="acoes"><a href="{% url 'core:rede-editar' object.pk %}">Editar rede e participantes</a><a href="{% url 'core:rede-excluir' object.pk %}">Excluir rede</a></p>
+
+<h2>Ofertas e pedidos</h2>
+{% if postagens %}
+<ul class="lista-simples">{% for p in postagens %}
+  <li><h3>{{ p.titulo }}</h3>
+  <p class="meta">{{ p.categoriaExibicao }}, por {{ p.autorExibicao }} em {{ p.criado_em|date:"d/m/Y" }}</p>
+  <p>{{ p.descricao }}</p>
+  <p class="links-linha"><a href="{% url 'core:postagem-editar' p.pk %}">Editar</a><a href="{% url 'core:postagem-excluir' p.pk %}">Remover</a></p></li>
+{% endfor %}</ul>
+{% else %}<p class="vazio">Ninguém publicou ainda. Que tal começar oferecendo algo?</p>{% endif %}
+
+<h2>Participantes</h2>
+{% with membros=object.membros.all %}
+{% if membros %}<p>{% for m in membros %}{{ m.nome_completo }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+{% else %}<p class="vazio">A rede ainda não tem participantes. Só participantes podem publicar. <a href="{% url 'core:rede-editar' object.pk %}">Adicionar participantes</a>.</p>{% endif %}
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block titulo %}Início{% endblock %}
+{% block conteudo %}
+<p class="manchete">Seus direitos já existem. A gente ajuda a chegar até eles.</p>
+<p class="introducao">O ElosPúblicos reúne os programas sociais da sua região, acompanha os pedidos feitos no CRAS e no CadÚnico, aproxima vizinhos que se ajudam e mostra quanto da verba contra a pobreza foi de fato gasta no seu município.</p>
+<div class="acoes">
+  <a class="botao" href="{% url 'core:programa-lista' %}">Ver programas da minha região</a>
+  {% if user.is_authenticated %}<a class="botao secundario" href="{% url 'core:cidadao-novo' %}">Cadastrar cidadão</a>{% endif %}
+</div>
+
+<div class="atalhos">
+  <a href="{% url 'core:programa-lista' %}"><h3>Programas sociais</h3><p>{{ total_programas }} programa{{ total_programas|pluralize }} com regras e documentos explicados.</p></a>
+  <a href="{% url 'core:mural' %}"><h3>Mural da comunidade</h3><p>{{ total_publicacoes }} oferta{{ total_publicacoes|pluralize }}, pedido{{ total_publicacoes|pluralize }}, editais e oficinas.</p></a>
+  <a href="{% url 'core:painel' %}"><h3>Onde está o dinheiro</h3><p>Previsto e executado nas políticas contra a pobreza.</p></a>
+  <a href="{% url 'core:rede-lista' %}"><h3>Redes de apoio</h3><p>{{ total_redes }} rede{{ total_redes|pluralize }} de doação, troca de serviço e carona.</p></a>
+</div>
+{% endblock %}

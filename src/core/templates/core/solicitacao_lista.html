@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block titulo %}Solicitações{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h1>Solicitações</h1><p class="introducao">Pedidos feitos no CRAS, CadÚnico, INSS e outros órgãos, com a situação mais recente.</p></div>
+  <a class="botao" href="{% url 'core:solicitacao-nova' %}">Registrar solicitação</a>
+</div>
+<form method="get" class="filtros">
+  <div class="campo"><label for="f-cidadao">Cidadão</label>
+    <select id="f-cidadao" name="cidadao"><option value="">Todos</option>{% for c in cidadaos %}<option value="{{ c.pk }}" {% if request.GET.cidadao == c.pk|stringformat:"d" %}selected{% endif %}>{{ c.nome_completo }}</option>{% endfor %}</select></div>
+  <div class="campo"><label for="f-status">Situação</label>
+    <select id="f-status" name="status"><option value="">Todas</option>{% for valor, nome in status_opcoes %}<option value="{{ valor }}" {% if request.GET.status == valor %}selected{% endif %}>{{ nome }}</option>{% endfor %}</select></div>
+  <button class="botao secundario" type="submit">Filtrar</button>
+</form>
+{% if object_list %}
+<div class="rolagem"><table>
+  <thead><tr><th>Cidadão</th><th>Programa</th><th>Órgão</th><th>Situação</th><th>Atualizada</th><th>Ações</th></tr></thead>
+  <tbody>{% for s in object_list %}
+    <tr>
+      <td><a href="{{ s.cidadao.get_absolute_url }}">{{ s.cidadao.nome_completo }}</a></td>
+      <td>{{ s.programa.nome }}</td>
+      <td>{{ s.get_orgao_display }}{% if s.numero_protocolo %}<p class="meta">Protocolo {{ s.numero_protocolo }}</p>{% endif %}</td>
+      <td><span class="selo {% if s.status == 'DEFERIDA' %}ok{% elif s.status == 'INDEFERIDA' %}nao{% else %}neutro{% endif %}">{{ s.get_status_display }}</span></td>
+      <td>{{ s.atualizado_em|date:"d/m/Y" }}</td>
+      <td class="links-linha"><a href="{% url 'core:solicitacao-editar' s.pk %}">Atualizar</a><a href="{% url 'core:solicitacao-excluir' s.pk %}">Excluir</a></td>
+    </tr>{% endfor %}
+  </tbody>
+</table></div>
+{% include "core/_paginacao.html" %}
+{% else %}<p class="vazio">Nenhuma solicitação encontrada.</p>{% endif %}
+{% endblock %}

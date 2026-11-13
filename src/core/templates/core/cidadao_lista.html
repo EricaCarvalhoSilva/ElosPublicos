@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}{% load formatos %}
+{% block titulo %}Cidadãos{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h1>Cidadãos cadastrados</h1><p class="introducao">Busque por nome, município ou CPF.</p></div>
+  <a class="botao" href="{% url 'core:cidadao-novo' %}">Cadastrar cidadão</a>
+</div>
+<form method="get" class="filtros" role="search">
+  <div class="campo"><label for="q">Buscar</label><input type="text" id="q" name="q" value="{{ request.GET.q }}"></div>
+  <button class="botao secundario" type="submit">Buscar</button>
+</form>
+{% if object_list %}
+<div class="rolagem"><table>
+  <thead><tr><th>Nome</th><th>CPF</th><th>Município</th><th class="numero">Renda por pessoa</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for c in object_list %}
+    <tr>
+      <td><a href="{{ c.get_absolute_url }}">{{ c.nome_completo }}</a></td>
+      <td>{{ c.documentoExibicao }}</td>
+      <td>{{ c.municipio }}/{{ c.uf }}</td>
+      <td class="numero">{{ c.rendaPerCapita|reais }}</td>
+      <td class="links-linha"><a href="{% url 'core:cidadao-editar' c.pk %}">Editar</a><a href="{% url 'core:cidadao-excluir' c.pk %}">Excluir</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% include "core/_paginacao.html" %}
+{% else %}
+<p class="vazio">Nenhum cadastro encontrado. <a href="{% url 'core:cidadao-novo' %}">Cadastre o primeiro cidadão</a>.</p>
+{% endif %}
+{% endblock %}
