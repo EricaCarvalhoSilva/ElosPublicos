@@ -49,9 +49,25 @@ O ElosPúblicos parte da ideia de que a pobreza não é resultado de falha indiv
 
 ## 2ª Entrega — Implementação
 
+### Como avaliar (resumo rápido)
+
+| | |
+|---|---|
+| **Usuário** | `admin` |
+| **Senha** | `admin123` |
+| **Endereço** | http://localhost:8000 (ou o link da porta 8000 no Codespaces) |
+
+O usuário e os dados de demonstração (programas sociais, cidadãos, redes, organizações e indicadores) são criados automaticamente pelo comando `python manage.py popular_dados`, que o Docker já executa sozinho.
+
+**Sem instalar nada (pelo navegador):** neste repositório, clique em **Code → Codespaces → Create codespace on main**. No terminal, rode `docker compose up --build`. Quando terminar, abra a porta **8000** na aba **Ports** (ícone de globo).
+
+**Roteiro sugerido de teste:** Cidadãos (cadastrar, ver ficha, editar, excluir) → ficha do cidadão com a checagem de elegibilidade → Solicitações → Redes de apoio → Mural → Painel "Onde está o dinheiro".
+
+Testes automáticos: `docker compose exec web python manage.py test core`
+
 ### Como executar
 
-Há duas formas. A primeira (Docker) funciona igual em Windows, Linux e macOS e já sobe o PostgreSQL junto.
+Há três formas. A primeira (Docker) funciona igual em Windows, Linux e macOS e já sobe o PostgreSQL junto. A segunda (Codespaces) roda direto no navegador, sem instalar nada.
 
 #### Opção 1: Docker (recomendada)
 
@@ -65,7 +81,24 @@ Abra http://localhost:8000. Na primeira execução o sistema cria as tabelas, po
 
 Para parar: `Ctrl+C`. Para apagar o banco e começar do zero: `docker compose down -v`.
 
-#### Opção 2: instalação manual
+#### Opção 2: pelo navegador, sem instalar nada (GitHub Codespaces)
+
+Pré-requisito: estar logado em uma conta do GitHub. O Codespace é criado na conta de quem abre; quem testa não altera este repositório.
+
+1. Nesta página do repositório, clique no botão verde **Code**, depois na aba **Codespaces** e em **Create codespace on main**. Vai abrir um editor (VS Code) no navegador.
+2. No terminal, na parte de baixo da tela, rode:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Espere aparecer `Starting development server at http://0.0.0.0:8000/`.
+4. Abra a aba **Ports**, ao lado de **Terminal**, e clique no ícone de globo da porta **8000**. Use a porta 8000; a 5432 é o banco de dados e não abre no navegador.
+5. Entre com **admin / admin123**.
+
+Para rodar os testes, abra outro terminal (botão **+**) e rode `docker compose exec web python manage.py test core`.
+
+#### Opção 3: instalação manual
 
 Pré-requisitos: Python 3.12 ou mais recente e PostgreSQL 14 ou mais recente.
 
