@@ -178,6 +178,14 @@ class CrudCidadaoTests(TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertFalse(Cidadao.objects.exists())
 
+    def test_cnpjFormatadoNaOrganizacao(self):
+        resposta = self.client.post(reverse("core:organizacao-nova"), {
+            "nome_completo": "Associação Teste", "tipo": "ASSOCIACAO", "cnpj": "11.222.333/0001-81",
+            "email": "", "telefone": "44 3025-1234", "municipio": "Maringá", "uf": "PR", "descricao": "",
+        })
+        self.assertEqual(resposta.status_code, 302)
+        self.assertEqual(Organizacao.objects.get().cnpj, "11222333000181")
+
     def test_paginasAbrem(self):
         for nome in ["core:inicio", "core:programa-lista", "core:mural", "core:painel",
                      "core:solicitacao-lista", "core:rede-lista", "core:organizacao-lista"]:

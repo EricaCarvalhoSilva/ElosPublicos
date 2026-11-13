@@ -50,10 +50,21 @@ MembroFamiliarFormSet = inlineformset_factory(
 
 
 class OrganizacaoForm(forms.ModelForm):
+    # Aceita CNPJ com ou sem pontuação; grava só os 14 números.
+    cnpj = forms.CharField(
+        label="CNPJ",
+        max_length=18,
+        required=False,
+        help_text="Opcional para coletivos. Somente números ou 00.000.000/0000-00",
+    )
+
     class Meta:
         model = Organizacao
         fields = ["nome_completo", "tipo", "cnpj", "email", "telefone", "municipio", "uf", "descricao"]
         labels = {"nome_completo": "nome da organização"}
+
+    def clean_cnpj(self) -> str | None:
+        return somenteDigitos(self.cleaned_data.get("cnpj") or "") or None
 
 
 class ProgramaSocialForm(forms.ModelForm):

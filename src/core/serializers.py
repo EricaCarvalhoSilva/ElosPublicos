@@ -48,8 +48,8 @@ class RegrasDoModeloMixin:
         return dados
 
 
-class CampoCpf(serializers.CharField):
-    """Aceita CPF com pontuação e entrega só os números."""
+class CampoSomenteDigitos(serializers.CharField):
+    """Aceita CPF/CNPJ com pontuação e entrega só os números."""
 
     def to_internal_value(self, data) -> str:
         return somenteDigitos(super().to_internal_value(data))
@@ -62,7 +62,7 @@ class MembroFamiliarSerializer(serializers.ModelSerializer):
 
 
 class CidadaoSerializer(RegrasDoModeloMixin, serializers.ModelSerializer):
-    cpf = CampoCpf(
+    cpf = CampoSomenteDigitos(
         max_length=14,
         validators=[validarCpf, UniqueValidator(queryset=Cidadao.objects.all())],
         write_only=True,
@@ -84,6 +84,13 @@ class CidadaoSerializer(RegrasDoModeloMixin, serializers.ModelSerializer):
 
 class OrganizacaoSerializer(RegrasDoModeloMixin, serializers.ModelSerializer):
     tipo_perfil = serializers.CharField(source="tipoPerfil", read_only=True)
+    cnpj = CampoSomenteDigitos(
+        max_length=18,
+        required=False,
+        allow_null=True,
+        allow_blank=True,
+        validators=[UniqueValidator(queryset=Organizacao.objects.all())],
+    )
 
     class Meta:
         model = Organizacao
