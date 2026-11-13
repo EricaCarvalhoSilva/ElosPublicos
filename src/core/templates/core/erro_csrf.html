@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% block titulo %}Página desatualizada{% endblock %}
+{% block conteudo %}
+<h1>Esta página ficou desatualizada</h1>
+<p class="introducao">Por segurança, formulários só podem ser enviados uma vez e pouco depois de abertos. Isso acontece quando a página foi aberta antes de entrar no sistema, ficou aberta em outra aba ou foi reaberta pelo botão Voltar. Nada foi salvo.</p>
+<div class="acoes">
+  <a class="botao" href="{{ request.META.HTTP_REFERER|default:'/' }}">Abrir o formulário de novo</a>
+  <a href="{% url 'core:inicio' %}">Ir para o início</a>
+</div>
+{% endblock %}

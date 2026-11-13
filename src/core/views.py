@@ -14,7 +14,9 @@ from django.db.models import ProtectedError, Q, Sum
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from core.compat import override
@@ -53,6 +55,12 @@ class FormularioMixin(LoginRequiredMixin, SuccessMessageMixin):
     titulo = ""
     textoBotao = "Salvar"
 
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        # Impede o navegador de reaproveitar um formulário antigo (botão Voltar),
+        # que teria um código de segurança (CSRF) vencido.
+        return super().dispatch(request, *args, **kwargs)
+
     @override
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
@@ -66,11 +74,24 @@ class ExclusaoMixin(LoginRequiredMixin, SuccessMessageMixin):
     template_name = "core/confirmar_exclusao.html"
     aviso = ""
 
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     @override
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
         contexto["aviso"] = self.aviso
         return contexto
+
+
+def falhaCsrf(request: HttpRequest, reason: str = "") -> HttpResponse:
+    """
+    Página mostrada quando o código de segurança do formulário venceu
+    (ex.: página aberta antes do login ou reaproveitada pelo botão Voltar).
+    Substitui a página técnica de erro 403 do Django.
+    """
+    return render(request, "core/erro_csrf.html", {"motivo": reason}, status=403)
 
 
 class InicioView(TemplateView):
@@ -154,6 +175,10 @@ class MembrosFamiliaresView(LoginRequiredMixin, View):
     """Edita a composição do núcleo familiar (composição 1:N)."""
 
     template_name = "core/form.html"
+
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def _renderizar(self, request: HttpRequest, cidadao: Cidadao, formset) -> HttpResponse:
         return render(

@@ -26,6 +26,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
+# Página amigável quando um formulário fica desatualizado.
+CSRF_FAILURE_VIEW = "core.views.falhaCsrf"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
