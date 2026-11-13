@@ -16,8 +16,16 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,.app.github.dev"
 ).split(",")
-# Necessário para o login funcionar quando o sistema roda no GitHub Codespaces.
-CSRF_TRUSTED_ORIGINS = ["https://*.app.github.dev"]
+# Endereços de onde os formulários (login, cadastros) podem ser enviados.
+# Os de app.github.dev e o https://localhost são usados pelo GitHub Codespaces,
+# que redireciona o site e faz o pedido chegar como vindo de https://localhost:8000.
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.app.github.dev",
+    "https://localhost:8000",
+    "https://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
